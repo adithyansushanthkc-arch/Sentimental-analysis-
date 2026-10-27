@@ -1,0 +1,520 @@
+/* ============================================================
+   Student Feedback Sentiment Analysis – Premium UI Stylesheet
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── CSS Custom Properties ────────────────────────────────── */
+:root {
+    --primary:       #4f46e5;
+    --primary-light: #6366f1;
+    --primary-dark:  #3730a3;
+    --success:       #10b981;
+    --danger:        #ef4444;
+    --warning:       #f59e0b;
+    --info:          #06b6d4;
+    --neutral:       #6b7280;
+    --surface:       #ffffff;
+    --bg:            #f1f5f9;
+    --border:        #e2e8f0;
+    --text-primary:  #0f172a;
+    --text-muted:    #64748b;
+    --radius:        14px;
+    --shadow-sm:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md:     0 4px 12px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.07);
+    --shadow-lg:     0 10px 30px rgba(0,0,0,.12), 0 4px 10px rgba(0,0,0,.08);
+    --transition:    .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Base Reset ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    background-color: var(--bg);
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.card {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 1.25rem;
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    font-size: .95rem;
+    letter-spacing: .01em;
+}
+
+/* ── Stat Cards ───────────────────────────────────────────── */
+.stat-card {
+    border-radius: var(--radius);
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.08);
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card:hover::after { opacity: 1; }
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-card .card-title {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+    opacity: .85;
+    margin-bottom: .5rem;
+}
+
+.stat-card .card-text {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+/* Gradient overrides for stat cards */
+.stat-card.bg-primary { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important; }
+.stat-card.bg-success  { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+.stat-card.bg-danger   { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; }
+.stat-card.bg-info     { background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%) !important; }
+.stat-card.bg-warning  { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; }
+.stat-card.bg-secondary{ background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important; }
+
+/* ── Admin Sidebar ────────────────────────────────────────── */
+.sidebar-admin-wrap {
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    width: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    flex-shrink: 0;
+}
+
+.sidebar-admin-wrap .brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .5rem .75rem 1rem;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    margin-bottom: 1rem;
+}
+
+.sidebar-admin-wrap .brand i { font-size: 1.5rem; color: #a5b4fc; }
+.sidebar-admin-wrap .brand span { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
+
+.sidebar-admin-wrap .nav-link {
+    color: rgba(255,255,255,.7);
+    border-radius: 10px;
+    padding: .65rem 1rem;
+    font-size: .9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    transition: background var(--transition), color var(--transition);
+}
+
+.sidebar-admin-wrap .nav-link i { width: 18px; text-align: center; }
+
+.sidebar-admin-wrap .nav-link:hover,
+.sidebar-admin-wrap .nav-link.active {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+}
+
+/* ── Client Sidebar ───────────────────────────────────────── */
+.sidebar-client-wrap {
+    background: linear-gradient(180deg, #312e81 0%, #1d4ed8 100%);
+    width: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    flex-shrink: 0;
+}
+
+.sidebar-client-wrap .brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .5rem .75rem 1rem;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    margin-bottom: 1rem;
+}
+
+.sidebar-client-wrap .brand i { font-size: 1.5rem; color: #bfdbfe; }
+.sidebar-client-wrap .brand span { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
+
+.sidebar-client-wrap .nav-link {
+    color: rgba(255,255,255,.75);
+    border-radius: 10px;
+    padding: .65rem 1rem;
+    font-size: .9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    transition: background var(--transition), color var(--transition);
+}
+
+.sidebar-client-wrap .nav-link i { width: 18px; text-align: center; }
+
+.sidebar-client-wrap .nav-link:hover,
+.sidebar-client-wrap .nav-link.active {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+}
+
+/* ── Legacy sidebar support (layout.html uses bg-dark / bg-primary) ─ */
+.sidebar .nav-link.active {
+    background-color: rgba(255,255,255,.18) !important;
+    color: #fff !important;
+}
+
+/* ── Sentiment Badges ─────────────────────────────────────── */
+.badge-positive {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    font-weight: 600;
+    padding: .35em .75em;
+    border-radius: 50px;
+}
+
+.badge-negative {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-weight: 600;
+    padding: .35em .75em;
+    border-radius: 50px;
+}
+
+.badge-neutral {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: #fff;
+    font-weight: 600;
+    padding: .35em .75em;
+    border-radius: 50px;
+}
+
+/* ── Upload Drop Zone ─────────────────────────────────────── */
+.upload-area {
+    border: 2.5px dashed var(--primary);
+    border-radius: var(--radius);
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background-color: #eef2ff;
+    cursor: pointer;
+    transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.upload-area:hover {
+    background-color: #e0e7ff;
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 4px rgba(79,70,229,.08);
+}
+
+/* ── Tables ───────────────────────────────────────────────── */
+.table-responsive {
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: .9rem;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.table tbody tr {
+    transition: background var(--transition);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8faff;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+    border-radius: 9px;
+    font-weight: 500;
+    font-size: .88rem;
+    transition: all var(--transition);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79,70,229,.4);
+}
+
+.btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,.35); }
+.btn-danger:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239,68,68,.35); }
+
+/* ── Alerts ───────────────────────────────────────────────── */
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-size: .9rem;
+}
+
+.alert-success { background: #ecfdf5; color: #065f46; }
+.alert-danger  { background: #fef2f2; color: #991b1b; }
+.alert-info    { background: #ecfeff; color: #164e63; }
+.alert-warning { background: #fffbeb; color: #92400e; }
+
+/* ── Form Controls ───────────────────────────────────────── */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    font-size: .9rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+
+/* ── Input Group ─────────────────────────────────────────── */
+.input-group-text {
+    border-radius: 10px 0 0 10px !important;
+    border: 1.5px solid var(--border);
+    background: #f8faff;
+    color: var(--primary);
+}
+
+/* ── Page Header Strip ───────────────────────────────────── */
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-md);
+}
+
+.page-header h2 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+.page-header p  { margin: 0; opacity: .85; font-size: .88rem; }
+
+/* ── Welcome Banner ──────────────────────────────────────── */
+.welcome-banner {
+    background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #7c3aed 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 2rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,.06);
+    border-radius: 50%;
+}
+
+.welcome-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; right: 40px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,.04);
+    border-radius: 50%;
+}
+
+.welcome-banner h4 { font-weight: 700; margin-bottom: .25rem; }
+.welcome-banner p  { opacity: .85; margin: 0; font-size: .9rem; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── Fade-in Animation ───────────────────────────────────── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+    animation: fadeInUp .45s ease both;
+}
+
+.animate-in:nth-child(2) { animation-delay: .08s; }
+.animate-in:nth-child(3) { animation-delay: .16s; }
+.animate-in:nth-child(4) { animation-delay: .24s; }
+
+/* ── Dropdown Menu ───────────────────────────────────────── */
+.dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    font-size: .9rem;
+}
+
+/* ── Modal ───────────────────────────────────────────────── */
+.modal-content {
+    border-radius: var(--radius);
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+}
+
+/* ── Login / Register Page ───────────────────────────────── */
+.auth-page-bg {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4f46e5 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Quick Stats Row ─────────────────────────────────────── */
+.quick-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .75rem 1rem;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: .5rem;
+    transition: box-shadow var(--transition);
+}
+
+.quick-stat:hover { box-shadow: var(--shadow-sm); }
+
+.quick-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* ── Page Entry Animation ────────────────────────────────── */
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+    animation: fadeSlideIn .35s ease-out both;
+}
+
+/* ── Sentiment Badges ─────────────────────────────────────── */
+.badge-positive {
+    background-color: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
+}
+.badge-negative {
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+}
+.badge-neutral {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+}
+
+/* ── Upload Area ──────────────────────────────────────────── */
+.upload-area {
+    transition: background .2s, border-color .2s;
+}
+.upload-area:hover {
+    background: #eef2ff !important;
+    border-color: var(--primary) !important;
+}
+
+/* ── Table Improvements ───────────────────────────────────── */
+.table > thead > tr > th {
+    font-size: .78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--text-muted);
+    padding: .9rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+.table > tbody > tr > td {
+    padding: .85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+.table > tbody > tr:last-child > td {
+    border-bottom: none;
+}
+.table-hover > tbody > tr:hover {
+    background-color: #f8faff;
+}
+
+/* ── Chart Container Constraints ───────────────────────────── */
+canvas {
+    max-width: 100%;
+    display: block;
+}
+

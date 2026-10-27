@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Student Feedback Sentiment Analysis</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-login-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+            color: #f8fafc;
+        }
+        .admin-badge-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+        }
+        .form-control-dark {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+        }
+        .form-control-dark:focus {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: #6366f1;
+            color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+        .btn-admin {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        .btn-admin:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-login-card animate-in">
+    <div class="text-center">
+        <div class="admin-badge-icon">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <h3 class="fw-bold text-white mb-1">Admin Login</h3>
+        <p class="text-white-50 mb-4" style="font-size: 0.9rem;">System Administration Portal Access</p>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${param.error != null and param.error[0] == 'unauthorized'}" class="alert alert-danger py-2" style="font-size: 0.85rem;">
+        <i class="fa-solid fa-circle-xmark me-1"></i> Access denied. Only Administrator accounts can log in here.
+    </div>
+    <div th:if="${param.error != null and param.error[0] == 'true'}" class="alert alert-danger py-2" style="font-size: 0.85rem;">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i> Invalid admin email or password.
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success py-2" style="font-size: 0.85rem;">
+        <i class="fa-solid fa-circle-check me-1"></i> You have logged out of the Admin Portal.
+    </div>
+    <div th:if="${param.denied}" class="alert alert-warning py-2" style="font-size: 0.85rem;">
+        <i class="fa-solid fa-shield-halved me-1"></i> Admin authorization required for requested page.
+    </div>
+
+    <form th:action="@{/admin/login}" method="post">
+        <div class="mb-3">
+            <label class="form-label text-white-50 fw-semibold" style="font-size: 0.85rem;">Admin Email</label>
+            <div class="input-group">
+                <span class="input-group-text bg-dark text-white-50 border-secondary"><i class="fa-solid fa-envelope"></i></span>
+                <input type="email" name="username" class="form-control form-control-dark" placeholder="admin@example.com" required autofocus>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-white-50 fw-semibold" style="font-size: 0.85rem;">Admin Password</label>
+            <div class="input-group">
+                <span class="input-group-text bg-dark text-white-50 border-secondary"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" name="password" class="form-control form-control-dark" placeholder="••••••••" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-admin w-100 mb-3">
+            <i class="fa-solid fa-right-to-bracket me-2"></i> Admin Login
+        </button>
+
+        <div class="text-center mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <a href="/login" class="text-white-50 text-decoration-none" style="font-size: 0.82rem;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Switch to Faculty Login
+            </a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

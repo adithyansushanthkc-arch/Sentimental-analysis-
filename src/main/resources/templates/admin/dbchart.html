@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('DB Chart')}"></head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{layout :: sidebar-admin}"></div>
+
+    <div class="flex-grow-1 p-4 overflow-auto animate-in" style="height:100vh;background:var(--bg);">
+
+        <!-- Page Header -->
+        <div class="welcome-banner mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="fa-solid fa-database me-2" style="opacity:.8;"></i>
+                        Database Overview &amp; Charts
+                    </h4>
+                    <p class="mb-0">Visual breakdown of all 8 database tables — row counts, distributions, and trends.</p>
+                </div>
+                <div class="text-end d-none d-md-block">
+                    <div style="font-size:2.2rem;opacity:.2;"><i class="fa-solid fa-chart-column"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE ROW COUNTS SUMMARY -->
+        <h6 class="text-uppercase fw-bold text-muted mb-3" style="font-size:.78rem;letter-spacing:.05em;">
+            <i class="fa-solid fa-table me-1"></i> Database Table Row Counts
+        </h6>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Users</div>
+                                <div class="fw-bold fs-3" th:text="${usersCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-users opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Uploads</div>
+                                <div class="fw-bold fs-3" th:text="${uploadsCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-upload opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#06b6d4,#0284c7);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Feedback Rows</div>
+                                <div class="fw-bold fs-3" th:text="${feedbackCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-comments opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#10b981,#047857);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Analysis Records</div>
+                                <div class="fw-bold fs-3" th:text="${analysisCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-chart-pie opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Sentiment Results</div>
+                                <div class="fw-bold fs-3" th:text="${sentimentResultsCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-face-smile opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#ec4899,#be185d);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Dictionary Words</div>
+                                <div class="fw-bold fs-3" th:text="${dictionaryCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-book opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#f97316,#c2410c);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Suggestions</div>
+                                <div class="fw-bold fs-3" th:text="${suggestionsCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-lightbulb opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-white stat-card" style="background:linear-gradient(135deg,#64748b,#334155);">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-white-50" style="font-size:.72rem;text-transform:uppercase;">Activity Logs</div>
+                                <div class="fw-bold fs-3" th:text="${activitiesCount}">0</div>
+                            </div>
+                            <i class="fa-solid fa-clock-rotate-left opacity-25 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY PIE / DONUT ROW -->
+        <h6 class="text-uppercase fw-bold text-muted mb-3" style="font-size:.78rem;letter-spacing:.05em;">
+            <i class="fa-solid fa-chart-pie me-1"></i> User &amp; Feedback Analytics
+        </h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-users me-2 text-primary"></i>Users by Role
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px;">
+                        <div style="position: relative; height: 190px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="userRoleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-user-check me-2 text-success"></i>Users by Status
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px;">
+                        <div style="position: relative; height: 190px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="userStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-face-smile me-2 text-warning"></i>Feedback Sentiment
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px;">
+                        <div style="position: relative; height: 190px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="feedbackSentimentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-book me-2 text-danger"></i>Dictionary Words
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px;">
+                        <div style="position: relative; height: 190px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="dictionaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UPLOADS & FACULTY ROW -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-upload me-2" style="color:#6366f1;"></i>Upload Status
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:220px;">
+                        <div style="position: relative; height: 200px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="uploadStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-chalkboard-user me-2 text-info"></i>Uploads per Faculty Member
+                    </div>
+                    <div class="card-body" style="min-height:220px;">
+                        <div style="position: relative; height: 200px; width: 100%;">
+                            <canvas id="facultyUploadChart"></canvas>
+                        </div>
+                        <div th:if="${#maps.isEmpty(facultyUploadMap)}" class="text-center text-muted py-3" style="font-size:.85rem;">
+                            No faculty users or uploads yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUGGESTIONS & ACTIVITY ROW -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-lightbulb me-2 text-warning"></i>Suggestions by Priority
+                    </div>
+                    <div class="card-body" style="min-height:220px;">
+                        <div style="position: relative; height: 200px; width: 100%;">
+                            <canvas id="suggestionPriorityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-list-check me-2 text-primary"></i>Suggestions by Status
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:220px;">
+                        <div style="position: relative; height: 200px; width: 100%; max-width: 260px; margin: 0 auto;">
+                            <canvas id="suggestionStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-semibold" style="font-size:.85rem;">
+                        <i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i>Activity Log Types
+                    </div>
+                    <div class="card-body" style="min-height:220px;">
+                        <div style="position: relative; height: 200px; width: 100%;">
+                            <canvas id="activityTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAW DATA TABLE -->
+        <h6 class="text-uppercase fw-bold text-muted mb-3" style="font-size:.78rem;letter-spacing:.05em;">
+            <i class="fa-solid fa-table-list me-1"></i> All Analysis Records (Raw Data)
+        </h6>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+                <span>analysis_record table</span>
+                <span class="badge bg-primary-subtle text-primary" th:text="${analysisCount} + ' rows'">0 rows</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="font-size:.85rem;">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>File</th>
+                            <th>User</th>
+                            <th>Total</th>
+                            <th>Positive</th>
+                            <th>Negative</th>
+                            <th>Neutral</th>
+                            <th>Avg Score</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(allAnalysisRecords)}">
+                            <td colspan="9" class="text-center text-muted py-4">No analysis records found.</td>
+                        </tr>
+                        <tr th:each="r : ${allAnalysisRecords}">
+                            <td class="fw-semibold text-muted" th:text="${r.id}">1</td>
+                            <td th:text="${r.upload != null ? r.upload.fileName : '&#8212;'}">file.csv</td>
+                            <td th:text="${r.user != null ? r.user.name : '&#8212;'}">Dr. Faculty</td>
+                            <td class="text-dark fw-semibold" th:text="${r.totalFeedback != null ? r.totalFeedback : 0}">0</td>
+                            <td class="text-success fw-semibold" th:text="${r.positiveCount != null ? r.positiveCount : 0}">0</td>
+                            <td class="text-danger fw-semibold" th:text="${r.negativeCount != null ? r.negativeCount : 0}">0</td>
+                            <td class="text-secondary fw-semibold" th:text="${r.neutralCount != null ? r.neutralCount : 0}">0</td>
+                            <td th:text="${r.averageScore != null ? #numbers.formatDecimal(r.averageScore, 1, 2) : '&#8212;'}">0.00</td>
+                            <td class="text-muted text-nowrap" th:text="${r.analysisDate != null ? #temporals.format(r.analysisDate, 'yyyy-MM-dd HH:mm') : '&#8212;'}">&#8212;</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    function makeDonut(id, labels, data, colors) {
+        var ctx = document.getElementById(id);
+        if (!ctx) return;
+        var total = data.reduce(function(a, b) { return a + b; }, 0);
+        if (total === 0) {
+            var wrapper = ctx.closest('.card-body');
+            if (wrapper) wrapper.innerHTML = '<div class="text-center text-muted py-3" style="font-size:.85rem;">No data yet.</div>';
+            return;
+        }
+        new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+        });
+    }
+
+    function makeBar(id, labels, data, color, horizontal) {
+        var ctx = document.getElementById(id);
+        if (!ctx) return;
+        var opts = {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } } }, x: { ticks: { font: { size: 11 } } } },
+            plugins: { legend: { display: false } }
+        };
+        if (horizontal) { opts.indexAxis = 'y'; }
+        new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: { labels: labels, datasets: [{ data: data, backgroundColor: color, borderRadius: 6 }] },
+            options: opts
+        });
+    }
+
+    var adminCount           = /*[[${adminCount}]]*/ 0;
+    var clientCount          = /*[[${clientCount}]]*/ 0;
+    var activeCount          = /*[[${activeCount}]]*/ 0;
+    var inactiveCount        = /*[[${inactiveCount}]]*/ 0;
+    var posFeedback          = /*[[${posFeedback}]]*/ 0;
+    var negFeedback          = /*[[${negFeedback}]]*/ 0;
+    var neuFeedback          = /*[[${neuFeedback}]]*/ 0;
+    var posWords             = /*[[${posWords}]]*/ 0;
+    var negWords             = /*[[${negWords}]]*/ 0;
+    var analyzedUploads      = /*[[${analyzedUploads}]]*/ 0;
+    var pendingUploads       = /*[[${pendingUploads}]]*/ 0;
+    var highSugg             = /*[[${highSuggestions}]]*/ 0;
+    var medSugg              = /*[[${medSuggestions}]]*/ 0;
+    var lowSugg              = /*[[${lowSuggestions}]]*/ 0;
+    var newSugg              = /*[[${newSugg}]]*/ 0;
+    var reviewedSugg         = /*[[${reviewedSugg}]]*/ 0;
+    var inProgressSugg       = /*[[${inProgressSugg}]]*/ 0;
+    var implementedSugg      = /*[[${implementedSugg}]]*/ 0;
+    var loginCount           = /*[[${loginCount}]]*/ 0;
+    var logoutCount          = /*[[${logoutCount}]]*/ 0;
+    var uploadActivity       = /*[[${uploadActivity}]]*/ 0;
+    var analysisActivity     = /*[[${analysisActivity}]]*/ 0;
+    var reportActivity       = /*[[${reportActivity}]]*/ 0;
+    var registrationActivity = /*[[${registrationActivity}]]*/ 0;
+    var facultyUploadMap     = /*[[${facultyUploadMap}]]*/ {};
+
+    makeDonut('userRoleChart',
+        ['Admin', 'Faculty (Client)'],
+        [adminCount, clientCount],
+        ['#6d28d9', '#3b82f6']);
+
+    makeDonut('userStatusChart',
+        ['Active', 'Inactive'],
+        [activeCount, inactiveCount],
+        ['#10b981', '#64748b']);
+
+    makeDonut('feedbackSentimentChart',
+        ['Positive', 'Negative', 'Neutral'],
+        [posFeedback, negFeedback, neuFeedback],
+        ['#10b981', '#ef4444', '#94a3b8']);
+
+    makeDonut('dictionaryChart',
+        ['Positive Words', 'Negative Words'],
+        [posWords, negWords],
+        ['#10b981', '#ef4444']);
+
+    makeDonut('uploadStatusChart',
+        ['Analyzed', 'Pending'],
+        [analyzedUploads, pendingUploads],
+        ['#3b82f6', '#f59e0b']);
+
+    var facLabels = Object.keys(facultyUploadMap);
+    var facData   = Object.values(facultyUploadMap);
+    if (facLabels.length > 0) {
+        makeBar('facultyUploadChart', facLabels, facData, '#6366f1', false);
+    }
+
+    makeBar('suggestionPriorityChart',
+        ['HIGH', 'MEDIUM', 'LOW'],
+        [highSugg, medSugg, lowSugg],
+        ['#ef4444', '#f59e0b', '#10b981'],
+        true);
+
+    makeDonut('suggestionStatusChart',
+        ['New', 'Reviewed', 'In Progress', 'Implemented'],
+        [newSugg, reviewedSugg, inProgressSugg, implementedSugg],
+        ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981']);
+
+    makeBar('activityTypeChart',
+        ['Login', 'Logout', 'Upload', 'Analysis', 'Report', 'Register'],
+        [loginCount, logoutCount, uploadActivity, analysisActivity, reportActivity, registrationActivity],
+        ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#ec4899', '#06b6d4'],
+        false);
+
+    /*]]>*/
+</script>
+</body>
+</html>

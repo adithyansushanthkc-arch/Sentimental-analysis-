@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Upload Feedback')}"></head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{layout :: sidebar-client}"></div>
+
+    <div class="flex-grow-1 p-4 overflow-auto animate-in" style="height:100vh; background:var(--bg);">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="fa-solid fa-upload me-2 text-primary"></i>Upload Feedback</h4>
+                <p class="text-muted mb-0" style="font-size:.9rem;">Upload a CSV file containing student feedback to begin sentiment analysis.</p>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-check"></i><span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i><span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="card">
+            <div class="card-header"><i class="fa-solid fa-file-csv me-2 text-primary"></i>Select CSV File</div>
+            <div class="card-body p-5">
+                <form th:action="@{/client/upload}" method="post" enctype="multipart/form-data" id="uploadForm">
+
+                    <!-- Drop Zone -->
+                    <div class="upload-area mb-4" id="drop-zone" onclick="document.getElementById('fileInput').click()"
+                         style="border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);">
+                        <i class="fa-solid fa-cloud-arrow-up text-primary mb-3" style="font-size:3rem;"></i>
+                        <h5 class="fw-semibold mb-1">Drag and drop your CSV file here</h5>
+                        <p class="text-muted mb-3">or click to browse from your computer</p>
+                        <input type="file" name="file" id="fileInput" class="d-none" accept=".csv" required onchange="updateFileName()">
+                        <div id="fileNameDisplay" class="mt-2" style="display:none;">
+                            <span class="badge bg-success fs-6 py-2 px-3">
+                                <i class="fa-solid fa-file-csv me-2"></i><span id="fileNameText"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Format Info -->
+                    <div class="alert alert-info d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><i class="fa-solid fa-circle-info me-1"></i>Expected CSV Format:</strong>
+                            <p class="mb-0 mt-1 text-muted" style="font-size:.88rem;">
+                                Columns (in order): <code>Student_ID, Faculty, Subject, Feedback</code>
+                            </p>
+                        </div>
+                        <a href="/client/sample-csv" class="btn btn-outline-info text-nowrap ms-3 fw-semibold">
+                            <i class="fa-solid fa-download me-1"></i> Sample CSV
+                        </a>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="text-end mt-4">
+                        <a href="/client/history" class="btn btn-outline-secondary me-2">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> View History
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg fw-semibold px-5" id="uploadBtn">
+                            <i class="fa-solid fa-upload me-2"></i>Upload &amp; Process
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="card">
+            <div class="card-header"><i class="fa-solid fa-lightbulb me-2 text-warning"></i>Tips for Best Results</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="d-flex gap-3">
+                            <div style="width:38px;height:38px;border-radius:10px;background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fa-solid fa-check text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold" style="font-size:.9rem;">UTF-8 Encoding</div>
+                                <div class="text-muted" style="font-size:.8rem;">Save your CSV with UTF-8 encoding to avoid character issues.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-3">
+                            <div style="width:38px;height:38px;border-radius:10px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fa-solid fa-table text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold" style="font-size:.9rem;">Include Header Row</div>
+                                <div class="text-muted" style="font-size:.8rem;">The first row must contain column names exactly as specified.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-3">
+                            <div style="width:38px;height:38px;border-radius:10px;background:#fffbeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fa-solid fa-star text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold" style="font-size:.9rem;">Descriptive Feedback</div>
+                                <div class="text-muted" style="font-size:.8rem;">Longer, detailed feedback gives more accurate sentiment scores.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+<script>
+    const dropZone = document.getElementById('drop-zone');
+
+    // Drag-and-drop highlighting
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.background = '#eef2ff';
+        dropZone.style.borderColor = '#4f46e5';
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.background = 'var(--bg)';
+        dropZone.style.borderColor = 'var(--border)';
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.background = 'var(--bg)';
+        dropZone.style.borderColor = 'var(--border)';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            document.getElementById('fileInput').files = files;
+            updateFileName();
+        }
+    });
+
+    function updateFileName() {
+        const fileInput = document.getElementById('fileInput');
+        const display = document.getElementById('fileNameDisplay');
+        const nameText = document.getElementById('fileNameText');
+        if (fileInput.files.length > 0) {
+            nameText.textContent = fileInput.files[0].name;
+            display.style.display = 'block';
+            dropZone.style.borderColor = '#10b981';
+            dropZone.style.background = '#ecfdf5';
+        }
+    }
+
+    // Upload loading state
+    document.getElementById('uploadForm').addEventListener('submit', function () {
+        const btn = document.getElementById('uploadBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+    });
+</script>
+</body>
+</html>

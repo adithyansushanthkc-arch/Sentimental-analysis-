@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Analysis Results')}"></head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{layout :: sidebar-client}"></div>
+
+    <div class="flex-grow-1 p-4 overflow-auto animate-in" style="height:100vh; background:var(--bg);">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1">
+                    <i class="fa-solid fa-magnifying-glass-chart me-2 text-primary"></i>
+                    Results: <span class="text-primary" th:text="${upload.fileName}"></span>
+                </h4>
+                <p class="text-muted mb-0" style="font-size:.9rem;">Detailed sentiment breakdown for each student response.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/client/history" class="btn btn-outline-secondary fw-semibold">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Back
+                </a>
+                <a th:if="${record != null}" th:href="@{/client/reports/download/{id}(id=${record.id})}"
+                   class="btn btn-danger fw-semibold">
+                    <i class="fa-solid fa-file-pdf me-1"></i>PDF Report
+                </a>
+                <a th:if="${record != null}" href="/client/suggestions" class="btn btn-success fw-semibold">
+                    <i class="fa-solid fa-lightbulb me-1"></i>View Suggestions
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Summary Stat Cards -->
+        <div class="row g-3 mb-4" th:if="${record != null}">
+            <div class="col-6 col-md-3">
+                <div class="card stat-card text-white bg-primary text-center">
+                    <div class="card-body py-3">
+                        <div style="font-size:1.8rem;opacity:.2;position:absolute;right:12px;top:10px;"><i class="fa-solid fa-comments"></i></div>
+                        <h6 class="mb-1">Total</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${record.totalFeedback}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card text-white bg-success text-center">
+                    <div class="card-body py-3">
+                        <div style="font-size:1.8rem;opacity:.2;position:absolute;right:12px;top:10px;"><i class="fa-solid fa-face-smile"></i></div>
+                        <h6 class="mb-1">Positive</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${record.positiveCount}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card text-white bg-danger text-center">
+                    <div class="card-body py-3">
+                        <div style="font-size:1.8rem;opacity:.2;position:absolute;right:12px;top:10px;"><i class="fa-solid fa-face-frown"></i></div>
+                        <h6 class="mb-1">Negative</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${record.negativeCount}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card text-white bg-secondary text-center">
+                    <div class="card-body py-3">
+                        <div style="font-size:1.8rem;opacity:.2;position:absolute;right:12px;top:10px;"><i class="fa-solid fa-face-meh"></i></div>
+                        <h6 class="mb-1">Neutral</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${record.neutralCount}">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart + Results Table -->
+        <div class="row g-3">
+            <!-- Pie Chart -->
+            <div class="col-md-4" th:if="${record != null}">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Distribution</div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <div style="position: relative; height: 260px; width: 100%; max-width: 280px; margin: 0 auto;">
+                            <canvas id="resultChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-center pb-3">
+                        <small class="text-muted">Avg Sentiment Score:
+                            <strong th:text="${#numbers.formatDecimal(record.averageScore, 1, 2)}">0.00</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div th:class="${record != null} ? 'col-md-8' : 'col-md-12'">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid fa-table me-2 text-primary"></i>Detailed Results</span>
+                        <span class="badge bg-primary rounded-pill" th:text="${#lists.size(results)} + ' rows'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle m-0" style="font-size:.88rem;">
+                                <thead style="background:var(--bg);">
+                                    <tr>
+                                        <th class="ps-3">Student ID</th>
+                                        <th>Faculty</th>
+                                        <th>Subject</th>
+                                        <th style="min-width:250px;">Feedback</th>
+                                        <th class="text-center">Score</th>
+                                        <th class="text-center">Sentiment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="res : ${results}">
+                                        <td class="ps-3 fw-semibold" th:text="${res.feedback.studentId}"></td>
+                                        <td th:text="${res.feedback.faculty}"></td>
+                                        <td th:text="${res.feedback.subject}"></td>
+                                        <td class="text-muted" th:text="${res.feedback.feedbackText}"></td>
+                                        <td class="text-center">
+                                            <span class="badge"
+                                                  th:classappend="${res.sentimentScore > 0} ? 'bg-success' : (${res.sentimentScore < 0} ? 'bg-danger' : 'bg-secondary')"
+                                                  th:text="${res.sentimentScore > 0 ? '+' : ''} + ${res.sentimentScore}"></span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge"
+                                                  th:classappend="${res.sentiment.name() == 'POSITIVE'} ? 'badge-positive' : (${res.sentiment.name() == 'NEGATIVE'} ? 'badge-negative' : 'badge-neutral')"
+                                                  th:text="${res.sentiment.name()}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(results)}">
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fa-solid fa-inbox fa-2x mb-2 d-block" style="opacity:.3;"></i>
+                                            No results available.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var pos = /*[[${record != null ? record.positiveCount : 0}]]*/ 0;
+    var neg = /*[[${record != null ? record.negativeCount : 0}]]*/ 0;
+    var neu = /*[[${record != null ? record.neutralCount : 0}]]*/ 0;
+
+    if (pos + neg + neu > 0) {
+        var ctx = document.getElementById('resultChart');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Negative', 'Neutral'],
+                    datasets: [{
+                        data: [pos, neg, neu],
+                        backgroundColor: ['#10b981', '#ef4444', '#6b7280'],
+                        borderWidth: 2,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(c) {
+                                    var t = pos + neg + neu;
+                                    return ' ' + c.label + ': ' + c.parsed + ' (' + Math.round(c.parsed / t * 100) + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

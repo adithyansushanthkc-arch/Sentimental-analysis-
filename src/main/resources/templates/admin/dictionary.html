@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Sentiment Dictionary')}"></head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{layout :: sidebar-admin}"></div>
+
+    <div class="flex-grow-1 p-4 overflow-auto animate-in" style="height:100vh; background:var(--bg);">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="fa-solid fa-book me-2 text-primary"></i>Sentiment Dictionary Management</h4>
+                <p class="text-muted mb-0" style="font-size:.9rem;">View, add, edit, and filter positive and negative sentiment words used during feedback analysis.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#addWordModal"
+                        onclick="setWordType('POSITIVE', 1)">
+                    <i class="fa-solid fa-plus me-1"></i>Add Positive Word
+                </button>
+                <button class="btn btn-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#addWordModal"
+                        onclick="setWordType('NEGATIVE', -1)">
+                    <i class="fa-solid fa-plus me-1"></i>Add Negative Word
+                </button>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i><span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i><span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filter & Summary Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div class="btn-group" role="group">
+                <a href="/admin/dictionary" class="btn fw-semibold"
+                   th:classappend="${currentFilter == 'ALL'} ? 'btn-primary' : 'btn-outline-secondary'">
+                    <i class="fa-solid fa-list me-1"></i>All Words
+                    <span class="badge bg-white text-dark ms-1" th:text="${totalCount}">0</span>
+                </a>
+                <a href="/admin/dictionary?filter=POSITIVE" class="btn fw-semibold"
+                   th:classappend="${currentFilter == 'POSITIVE'} ? 'btn-success' : 'btn-outline-success'">
+                    <i class="fa-solid fa-face-smile me-1"></i>Positive Words
+                    <span class="badge bg-white text-dark ms-1" th:text="${positiveCount}">0</span>
+                </a>
+                <a href="/admin/dictionary?filter=NEGATIVE" class="btn fw-semibold"
+                   th:classappend="${currentFilter == 'NEGATIVE'} ? 'btn-danger' : 'btn-outline-danger'">
+                    <i class="fa-solid fa-face-frown me-1"></i>Negative Words
+                    <span class="badge bg-white text-dark ms-1" th:text="${negativeCount}">0</span>
+                </a>
+            </div>
+
+            <div class="text-muted" style="font-size:.85rem;">
+                Showing <strong th:text="${#lists.size(words)}">0</strong> word(s)
+            </div>
+        </div>
+
+        <!-- Dictionary Table -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span>
+                    <i class="fa-solid fa-book-open me-2 text-primary"></i>
+                    Dictionary Words List
+                </span>
+                <span class="badge bg-primary rounded-pill" th:text="${currentFilter}">ALL</span>
+            </div>
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(words)}" class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-book-open fa-2x mb-2 d-block" style="opacity:.25;"></i>
+                    <p>No words found matching the selected filter.</p>
+                </div>
+                <div class="table-responsive" th:if="${!#lists.isEmpty(words)}">
+                    <table class="table table-hover align-middle m-0" style="font-size:.9rem;">
+                        <thead style="background:var(--bg);">
+                            <tr>
+                                <th class="ps-4">Word</th>
+                                <th>Sentiment Type</th>
+                                <th>Weight</th>
+                                <th>Status</th>
+                                <th>Added Date</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="w : ${words}">
+                                <td class="ps-4 fw-bold" th:text="${w.word}">word</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${w.sentimentType.name() == 'POSITIVE'} ? 'badge-positive' : 'badge-negative'"
+                                          th:text="${w.sentimentType}">TYPE</span>
+                                </td>
+                                <td>
+                                    <span class="badge fs-6"
+                                          th:classappend="${w.weight > 0} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${w.weight > 0 ? '+' + w.weight : w.weight}">0</span>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${w.status == 'Active'} ? 'bg-info text-dark' : 'bg-secondary'"
+                                          th:text="${w.status}">Active</span>
+                                </td>
+                                <td class="text-muted" style="font-size:.82rem;"
+                                    th:text="${w.createdAt != null ? #temporals.format(w.createdAt, 'dd MMM yyyy') : 'N/A'}">Date</td>
+                                <td class="text-center">
+                                    <!-- Edit Button -->
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1 fw-semibold"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#editWordModal-' + ${w.id}"
+                                            title="Edit Word & Weight">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                                    </button>
+
+                                    <!-- Delete Form -->
+                                    <form th:action="@{/admin/dictionary/delete/{id}(id=${w.id})}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Delete word permanently?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold" title="Delete Word">
+                                            <i class="fa-solid fa-trash me-1"></i>Delete
+                                        </button>
+                                    </form>
+
+                                    <!-- Edit Word Modal -->
+                                    <div class="modal fade text-start" th:id="'editWordModal-' + ${w.id}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-bold">
+                                                        <i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Edit Dictionary Word
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form th:action="@{/admin/dictionary/edit}" method="post">
+                                                    <input type="hidden" name="id" th:value="${w.id}">
+                                                    <div class="modal-body py-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold" style="font-size:.88rem;">Word</label>
+                                                            <input type="text" name="word" class="form-control" th:value="${w.word}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold" style="font-size:.88rem;">Sentiment Type</label>
+                                                            <select name="sentimentType" class="form-select" required>
+                                                                <option value="POSITIVE" th:selected="${w.sentimentType.name() == 'POSITIVE'}">Positive</option>
+                                                                <option value="NEGATIVE" th:selected="${w.sentimentType.name() == 'NEGATIVE'}">Negative</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold" style="font-size:.88rem;">
+                                                                Weight <small class="text-muted">(Positive > 0, Negative &lt; 0)</small>
+                                                            </label>
+                                                            <input type="number" name="weight" class="form-control" th:value="${w.weight}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold" style="font-size:.88rem;">Status</label>
+                                                            <select name="status" class="form-select" required>
+                                                                <option value="Active" th:selected="${w.status == 'Active'}">Active</option>
+                                                                <option value="Inactive" th:selected="${w.status == 'Inactive'}">Inactive</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-0 pt-0">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary fw-semibold px-4">
+                                                            <i class="fa-solid fa-save me-1"></i>Save Changes
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Word Modal -->
+<div class="modal fade" id="addWordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fa-solid fa-plus-circle me-2 text-primary"></i>Add New Dictionary Word
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/admin/dictionary/add}" method="post">
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:.88rem;">Word</label>
+                        <input type="text" name="word" class="form-control" placeholder="e.g. excellent, terrible" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:.88rem;">Sentiment Type</label>
+                        <select name="sentimentType" id="sentimentType" class="form-select" required>
+                            <option value="POSITIVE">Positive</option>
+                            <option value="NEGATIVE">Negative</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:.88rem;">
+                            Weight <small class="text-muted">(Positive > 0, Negative &lt; 0)</small>
+                        </label>
+                        <input type="number" name="weight" id="weight" class="form-control"
+                               placeholder="e.g. 1 or -1" required>
+                        <div class="form-text">Positive words must have weight > 0. Negative words must have weight &lt; 0.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4">
+                        <i class="fa-solid fa-save me-1"></i>Save Word
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+<script>
+    function setWordType(type, defaultWeight) {
+        document.getElementById('sentimentType').value = type;
+        document.getElementById('weight').value = defaultWeight;
+    }
+</script>
+</body>
+</html>

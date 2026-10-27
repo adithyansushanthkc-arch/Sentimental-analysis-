@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Register')}"></head>
+<body style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4f46e5 100%); min-height: 100vh;">
+
+<div class="container-fluid" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 0;">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-5 col-lg-4">
+
+            <!-- Brand Header -->
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);">
+                    <i class="fa-solid fa-user-plus text-white" style="font-size:1.8rem;"></i>
+                </div>
+                <h2 class="text-white fw-bold mb-1">Create Account</h2>
+                <p class="text-white" style="opacity:.7;">Join the Student Feedback System</p>
+            </div>
+
+            <div class="card border-0" style="border-radius:20px;box-shadow:0 25px 60px rgba(0,0,0,.3);">
+                <div class="card-body p-5">
+                    <h4 class="fw-bold mb-1" style="color:#0f172a;">Register</h4>
+                    <p class="text-muted mb-4" style="font-size:.9rem;">Fill in the details below to create your account.</p>
+
+                    <!-- Server-side error -->
+                    <div th:if="${registerError}" class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span th:text="${registerError}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form th:action="@{/register}" th:object="${registerRequest}" method="post" novalidate>
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold" style="font-size:.88rem;">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-user" style="color:#4f46e5;"></i></span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="name"
+                                       th:field="*{name}"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                       placeholder="Enter your full name"
+                                       required autofocus>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold" style="font-size:.88rem;">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-envelope" style="color:#4f46e5;"></i></span>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                       placeholder="Enter your email"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold" style="font-size:.88rem;">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-lock" style="color:#4f46e5;"></i></span>
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       th:field="*{password}"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                       placeholder="Minimum 6 characters"
+                                       required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label for="confirmPassword" class="form-label fw-semibold" style="font-size:.88rem;">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-lock" style="color:#4f46e5;"></i></span>
+                                <input type="password"
+                                       class="form-control"
+                                       id="confirmPassword"
+                                       th:field="*{confirmPassword}"
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                                       placeholder="Re-enter your password"
+                                       required>
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                            <!-- Client-side match feedback -->
+                            <div id="passwordMismatch" class="text-danger small mt-1" style="display:none;">
+                                <i class="fa-solid fa-circle-xmark me-1"></i>Passwords do not match.
+                            </div>
+                            <div id="passwordMatch" class="text-success small mt-1" style="display:none;">
+                                <i class="fa-solid fa-circle-check me-1"></i>Passwords match.
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg fw-semibold" id="registerBtn" style="border-radius:12px;padding:.75rem;">
+                                <i class="fa-solid fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+
+                        <!-- Link to Login -->
+                        <p class="text-center text-muted mb-0" style="font-size:.88rem;">
+                            Already have an account?
+                            <a href="/login" class="fw-semibold text-decoration-none" style="color:#4f46e5;">Sign in here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Role notice -->
+            <p class="text-center mt-3" style="color:rgba(255,255,255,.55);font-size:.78rem;">
+                <i class="fa-solid fa-info-circle me-1"></i>
+                New accounts are registered as <strong>Faculty (Client)</strong> role by default.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+<script>
+    // Toggle password visibility
+    function toggleVisibility(btnId, inputId) {
+        document.getElementById(btnId).addEventListener('click', function () {
+            const input = document.getElementById(inputId);
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    }
+    toggleVisibility('togglePassword', 'password');
+    toggleVisibility('toggleConfirmPassword', 'confirmPassword');
+
+    // Real-time password match feedback
+    function checkPasswordMatch() {
+        const pw  = document.getElementById('password').value;
+        const cpw = document.getElementById('confirmPassword').value;
+        const mismatch = document.getElementById('passwordMismatch');
+        const match    = document.getElementById('passwordMatch');
+        if (cpw.length === 0) {
+            mismatch.style.display = 'none';
+            match.style.display    = 'none';
+        } else if (pw !== cpw) {
+            mismatch.style.display = 'block';
+            match.style.display    = 'none';
+        } else {
+            mismatch.style.display = 'none';
+            match.style.display    = 'block';
+        }
+    }
+    document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+    document.getElementById('password').addEventListener('input', checkPasswordMatch);
+</script>
+</body>
+</html>

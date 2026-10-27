@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | Student Feedback Sentiment Analysis'">Student Feedback Sentiment Analysis</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════ ADMIN SIDEBAR ═══════════════════ -->
+<div th:fragment="sidebar-admin">
+    <div class="sidebar d-flex flex-column p-3 text-white"
+         style="width:260px;min-height:100vh;background:linear-gradient(180deg,#0f172a 0%,#1e1b4b 100%);">
+
+        <!-- Brand -->
+        <a href="/admin/dashboard"
+           class="d-flex align-items-center text-white text-decoration-none pb-3 mb-2"
+           style="border-bottom:1px solid rgba(255,255,255,.1);">
+            <div class="me-2 d-flex align-items-center justify-content-center"
+                 style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <span class="fs-6 fw-bold">Admin Portal</span>
+        </a>
+
+        <!-- Nav -->
+        <ul class="nav nav-pills flex-column mb-auto gap-1 mt-1">
+            <li class="nav-item">
+                <a href="/admin/dashboard" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/dashboard'} ? 'active' : ''">
+                    <i class="fa-solid fa-chart-pie me-2" style="width:18px;text-align:center;"></i>Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/admin/users" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/users' and (param.role == null or param.role[0] == 'ALL')} ? 'active' : ''">
+                    <i class="fa-solid fa-chart-line me-2" style="width:18px;text-align:center;"></i>User Analytics
+                </a>
+            </li>
+            <li class="ps-3">
+                <a href="/admin/users?role=CLIENT" class="nav-link text-white-50 py-1"
+                   style="border-radius:8px;font-size:.85rem;"
+                   th:classappend="${param.role != null and param.role[0] == 'CLIENT'} ? 'active text-white bg-primary' : ''">
+                    <i class="fa-solid fa-chalkboard-user me-2 text-info" style="width:16px;"></i>Faculty Users
+                </a>
+            </li>
+            <li>
+                <a href="/admin/analysis-records" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/analysis-records'} ? 'active' : ''">
+                    <i class="fa-solid fa-chart-bar me-2" style="width:18px;text-align:center;"></i>Feedback Analytics
+                </a>
+            </li>
+            <li>
+                <a href="/admin/dictionary" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/dictionary'} ? 'active' : ''">
+                    <i class="fa-solid fa-book me-2" style="width:18px;text-align:center;"></i>Sentiment Dictionary
+                </a>
+            </li>
+            <li>
+                <a href="/admin/suggestions" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/suggestions'} ? 'active' : ''">
+                    <i class="fa-solid fa-lightbulb me-2" style="width:18px;text-align:center;"></i>Future Suggestions
+                </a>
+            </li>
+            <li>
+                <a href="/admin/system-data" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/system-data'} ? 'active' : ''">
+                    <i class="fa-solid fa-file-pdf me-2" style="width:18px;text-align:center;"></i>Reports
+                </a>
+            </li>
+            <li>
+                <a href="/admin/dbchart" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/admin/dbchart'} ? 'active' : ''">
+                    <i class="fa-solid fa-database me-2" style="width:18px;text-align:center;"></i>DB Chart
+                </a>
+            </li>
+            <li class="mt-3 pt-2" style="border-top:1px solid rgba(255,255,255,.1);">
+                <form th:action="@{/admin/logout}" method="post" class="m-0 p-0">
+                    <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start d-flex align-items-center text-danger-emphasis" style="border-radius:10px;padding:.6rem 1rem;">
+                        <i class="fa-solid fa-right-from-bracket me-2 text-danger" style="width:18px;text-align:center;"></i>
+                        <span class="fw-semibold text-danger">Admin Logout</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+        <!-- Profile Footer -->
+        <hr style="border-color:rgba(255,255,255,.1);">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <div class="me-2 d-flex align-items-center justify-content-center"
+                     style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);">
+                    <i class="fa-solid fa-user-shield" style="font-size:.85rem;"></i>
+                </div>
+                <div>
+                    <div class="fw-semibold" style="font-size:.85rem;" sec:authentication="name">Admin</div>
+                    <div style="font-size:.72rem;opacity:.6;">Administrator</div>
+                </div>
+            </div>
+            <form th:action="@{/admin/logout}" method="post" class="m-0 p-0">
+                <button type="submit" class="btn btn-sm btn-outline-danger border-0 text-white" title="Admin Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ CLIENT (FACULTY) SIDEBAR ═══════════════════ -->
+<div th:fragment="sidebar-client">
+    <div class="sidebar d-flex flex-column p-3 text-white"
+         style="width:260px;min-height:100vh;background:linear-gradient(180deg,#312e81 0%,#1d4ed8 100%);">
+
+        <!-- Brand -->
+        <a href="/client/dashboard"
+           class="d-flex align-items-center text-white text-decoration-none pb-3 mb-2"
+           style="border-bottom:1px solid rgba(255,255,255,.15);">
+            <div class="me-2 d-flex align-items-center justify-content-center"
+                 style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.2);">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <span class="fs-6 fw-bold">Faculty Portal</span>
+        </a>
+
+        <!-- Nav -->
+        <ul class="nav nav-pills flex-column mb-auto gap-1 mt-1">
+            <li class="nav-item">
+                <a href="/client/dashboard" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/client/dashboard'} ? 'active' : ''">
+                    <i class="fa-solid fa-house me-2" style="width:18px;text-align:center;"></i>Faculty Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/client/upload" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/client/upload'} ? 'active' : ''">
+                    <i class="fa-solid fa-upload me-2" style="width:18px;text-align:center;"></i>Upload Feedback
+                </a>
+            </li>
+            <li>
+                <a href="/client/history" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/client/history'} ? 'active' : ''">
+                    <i class="fa-solid fa-clock-rotate-left me-2" style="width:18px;text-align:center;"></i>Analysis History
+                </a>
+            </li>
+            <li>
+                <a href="/client/suggestions" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/client/suggestions'} ? 'active' : ''">
+                    <i class="fa-solid fa-lightbulb me-2" style="width:18px;text-align:center;"></i>Future Suggestions
+                </a>
+            </li>
+            <li>
+                <a href="/client/reports" class="nav-link text-white"
+                   style="border-radius:10px;"
+                   th:classappend="${currentUri == '/client/reports'} ? 'active' : ''">
+                    <i class="fa-solid fa-file-pdf me-2" style="width:18px;text-align:center;"></i>Reports
+                </a>
+            </li>
+            <li class="mt-3 pt-2" style="border-top:1px solid rgba(255,255,255,.15);">
+                <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                    <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start d-flex align-items-center" style="border-radius:10px;padding:.6rem 1rem;">
+                        <i class="fa-solid fa-right-from-bracket me-2 text-warning" style="width:18px;text-align:center;"></i>
+                        <span class="fw-semibold text-white">Logout</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+        <!-- Profile Footer -->
+        <hr style="border-color:rgba(255,255,255,.15);">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <div class="me-2 d-flex align-items-center justify-content-center"
+                     style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);">
+                    <i class="fa-solid fa-user" style="font-size:.85rem;"></i>
+                </div>
+                <div>
+                    <div class="fw-semibold" style="font-size:.85rem;" sec:authentication="name">Faculty</div>
+                    <div style="font-size:.72rem;opacity:.7;">Faculty Member</div>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                <button type="submit" class="btn btn-sm btn-outline-light border-0" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS FRAGMENT ═══════════════════ -->
+<div th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+</div>
+</body>
+</html>

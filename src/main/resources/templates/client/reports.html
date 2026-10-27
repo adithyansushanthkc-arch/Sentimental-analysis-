@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Analysis Reports')}"></head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{layout :: sidebar-client}"></div>
+
+    <div class="flex-grow-1 p-4 overflow-auto animate-in" style="height:100vh; background:var(--bg);">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="fa-solid fa-file-pdf me-2 text-danger"></i>Analysis Reports</h4>
+                <p class="text-muted mb-0" style="font-size:.9rem;">Download PDF reports for your analyzed feedback files.</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(records)}" class="card text-center py-5">
+            <div class="card-body">
+                <i class="fa-solid fa-file-circle-xmark fa-3x text-muted mb-3 d-block" style="opacity:.3;"></i>
+                <h5 class="text-muted">No reports available</h5>
+                <p class="text-muted" style="font-size:.9rem;">Upload and analyze a CSV file to generate a report.</p>
+                <a href="/client/upload" class="btn btn-primary">
+                    <i class="fa-solid fa-upload me-1"></i> Upload Feedback
+                </a>
+            </div>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="card" th:if="${!#lists.isEmpty(records)}">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span><i class="fa-solid fa-list me-2 text-primary"></i>Available Reports</span>
+                <span class="badge bg-danger rounded-pill" th:text="${#lists.size(records)} + ' report(s)'"></span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle m-0" style="font-size:.9rem;">
+                        <thead style="background:var(--bg);">
+                            <tr>
+                                <th class="ps-4">File Name</th>
+                                <th>Analysis Date</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Positive</th>
+                                <th class="text-center">Negative</th>
+                                <th class="text-center">Neutral</th>
+                                <th class="text-center">Avg Score</th>
+                                <th class="text-center">Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="r : ${records}">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-file-csv text-success"></i>
+                                        <span class="fw-semibold" th:text="${r.upload.fileName}">file.csv</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted"
+                                    th:text="${#temporals.format(r.analysisDate, 'dd MMM yyyy, HH:mm')}">Date</td>
+                                <td class="text-center fw-bold" th:text="${r.totalFeedback}">0</td>
+                                <td class="text-center">
+                                    <span class="badge badge-positive" th:text="${r.positiveCount}">0</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-negative" th:text="${r.negativeCount}">0</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-neutral" th:text="${r.neutralCount}">0</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary"
+                                          th:text="${#numbers.formatDecimal(r.averageScore, 1, 2)}">0.00</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/client/reports/download/{id}(id=${r.id})}"
+                                       class="btn btn-sm btn-danger fw-semibold">
+                                        <i class="fa-solid fa-file-pdf me-1"></i>PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
